@@ -12,3 +12,7 @@ scheduling:
     key: os
     operator: Equal 
     value: "windows"
+overhead:
+  podFixed:
+    memory: "1Mi"
+    cpu: "10m"
