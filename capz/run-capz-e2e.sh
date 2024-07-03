@@ -33,7 +33,11 @@ main() {
     export CAPI_VERSION="${CAPI_VERSION:-"v1.7.2"}"
     export HELM_VERSION=v3.14.4
     export TOOLS_BIN_DIR="${TOOLS_BIN_DIR:-$SCRIPT_ROOT/tools/bin}"
-    export WORKLOAD_IDENTITY_ID="${WORKLOAD_IDENTITY_ID:-"cabf5f22-ec7e-4e84-9e35-c02e57ca555d"}"
+    export WORKLOAD_IDENTITY_ID="${WORKLOAD_IDENTITY_ID:-"34d8e06d-d198-477e-b166-6936e58d90ae"}"
+    export AZURE_SUBSCRIPTION_ID="${AZURE_SUBSCRIPTION_ID:-"46678f10-4bbb-447e-98e8-d2829589f2d8"}"
+    export AZURE_TENANT_ID="${AZURE_TENANT_ID:-"d1aa7522-0959-442e-80ee-8c4f7fb4c184"}"
+    export AZURE_CLIENT_ID="${AZURE_CLIENT_ID:-"34d8e06d-d198-477e-b166-6936e58d90ae"}"
+    export REGISTRY="capzcicommunity.azurecr.io"
 
     # other config
     export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
@@ -467,7 +471,12 @@ set_azure_envs() {
     # shellcheck disable=SC1091
     source "${CAPZ_DIR}/hack/util.sh"
     # shellcheck disable=SC1091
-    source "${CAPZ_DIR}/hack/ensure-azcli.sh"
+    echo "installing Azure CLI"
+    apt-get update && apt-get install -y ca-certificates curl apt-transport-https lsb-release gnupg
+    curl --retry 3 -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+    AZ_REPO=$(lsb_release -cs)
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ ${AZ_REPO} main" | tee /etc/apt/sources.list.d/azure-cli.list
+    apt-get update && apt-get install -y azure-cli
 
     # Verify the required Environment Variables are present.
     : "${AZURE_SUBSCRIPTION_ID:?Environment variable empty or not defined.}"
